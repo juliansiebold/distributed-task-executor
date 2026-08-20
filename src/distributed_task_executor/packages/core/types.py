@@ -9,7 +9,5 @@ class TaskStatus(StrEnum):
 
 
 class Task(dataclass): 
-
     id: uuid4
     task_status: TaskStatus
-    

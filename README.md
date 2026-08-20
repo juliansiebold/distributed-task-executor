@@ -1,5 +1,7 @@
 # distributed-task-executor
 
+A project to showcase a distributed task executor.
+
 ### Components
 Queue (Dispatcher)
 State Store
@@ -14,7 +16,14 @@ Observability / Health checks
 
 #state management #ode dynamics #communication, and #system failures
 
-### Flow Diagram
+### Objects / Participants
+- API Listener
+- State Store (Postgres)
+- Task Queue (Redis/MQ)
+- Orchestrator Watchdog
+- Worker
+
+### Task Sequence
 ```Mermaid
 sequenceDiagram
     autonumber
