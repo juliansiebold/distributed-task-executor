@@ -4,7 +4,9 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "fakeredis>=2.37.1",
+]
 
 [project.scripts]
 distributed-task-executor = "distributed_task_executor:main"
