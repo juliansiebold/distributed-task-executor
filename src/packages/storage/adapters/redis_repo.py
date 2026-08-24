@@ -11,6 +11,6 @@ class TaskQueueProtocol(Protocol):
         """pop the next available taskID, optionally blocking until available"""
         ...
 
-class RedisTaskRepository(TaskQueueProtocol):
+class RedisTaskRepository:
     """Redis tasks queue mannager implementation"""
     pass
