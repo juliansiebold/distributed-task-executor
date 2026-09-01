@@ -14,19 +14,20 @@ class TaskPayload:
     caller: str
     delay_seconds: int
 
-@dataclass()
-class Task(): 
+WorkerId = int
+TaskId = UUID
+
+class Lease:
+    """Locks a task to an assigned worker. Owns TTL definition"""
+    lease_ttl_seconds: intw
+    assigned_worker: WorkerId
+    task_id = TaskId
+
+@dataclass
+class Task: 
     '''Representation of an arbitrary task to queue into the system for execution'''
-    id: UUID
+    task_id = TaskId
     task_status: TaskStatus = TaskStatus.PENDING
     payload: TaskPayload
 
-WorkerId = int
-
-class Lease:
-    """Locks a task to an assigned worker"""
-    lease_ttl_seconds: int
-    assigned_worker: WorkerId
-    Task: Task
-
-# TODO Needs state managemennt for Task
+    # TODO Needs state managemennt for Task

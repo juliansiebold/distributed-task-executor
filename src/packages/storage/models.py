@@ -15,8 +15,17 @@ class TaskQueueProtocol(Protocol):
 
 class StateStore(Protocol):
 
-    def write_task(task: Task) -> None:
-        """Writes a task into the State Store"""
+    def upsert_task(task: Task) -> None:
+        """Writes / updates a task into the State Store"""
 
     def acquire_lease_lock(lease: Lease) -> Lease:
-        """"""
+        """Locks this task for other workers.
+        
+        # move following to implementation
+        Side effects
+            - creates a lease in db
+            - Sets the time to live from lease definition. 
+            - Lease must set Status to pending initially"""
+
+    def extend_lease(lease: Lease) -> None:
+        """Heartbeat to update ttl"""
