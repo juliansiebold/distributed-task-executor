@@ -18,13 +18,13 @@ class TaskStateBase(AbstractTaskState):
     def handle_success(self, task: Task) -> None:
         raise TaskException("This state does not allow succeeding a Task")
 
-class PendingTask(TaskStateBase):
+class PendingState(TaskStateBase):
     """Starts the Task if called"""
     def handle_start(self, task: Task, worker_id: WorkerId) -> None:
         task.set_lease(worker_id=worker_id)
         task.transition_to(state="RunningState")
 
-class RunningTask(TaskStateBase):
+class RunningState(TaskStateBase):
     """Handles Success or Failure transition"""
     def handle_fail(self, task: Task) -> None:
         task.transition_to(state="FailedState")

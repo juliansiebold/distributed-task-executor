@@ -53,9 +53,6 @@ class Task:
 class AbstractTaskState(ABC):
     """Abstract interface for Task state handling."""
 
-    def handle_creation(self, task: Task) -> None:
-        pass
-
     def handle_start(self, task: Task, worker_id: WorkerId) -> None:
         pass
 
