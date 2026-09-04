@@ -17,14 +17,18 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "fakeredis" },
+]
+
+[package.dev-dependencies]
+dev = [
     { name = "pytest" },
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "fakeredis", specifier = ">=2.37.1" },
-    { name = "pytest", specifier = ">=9.1.1" },
-]
+requires-dist = [{ name = "fakeredis", specifier = ">=2.37.1" }]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pytest", specifier = ">=9.1.1" }]
 
 [[package]]
 name = "fakeredis"
