@@ -1,7 +1,7 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from abc import ABC
 from enum import StrEnum
-from uuid import UUID
+from uuid import UUID, uuid4
 from typing import Optional
 class TaskStatus(StrEnum):
     PENDING = 'Pending'
@@ -30,11 +30,24 @@ class Lease:
 @dataclass
 class Task: 
     '''Representation of an arbitrary task to queue into the system for execution'''
-    task_id: TaskId
     payload: TaskPayload
     _state: "AbstractTaskState"
+    task_id: TaskId
     retry_count: int = 0
     lease: Optional[Lease] = None
+
+    def __init__(self, payload: TaskPayload, state: "AbstractTaskState", task_id: Optional[TaskId]=None):
+        """init allows for both a newly created task as well a an existing task, read from database"""
+        self.payload = payload
+        self._state = state
+        if task_id is None: 
+            self.task_id = uuid4()
+        else: 
+            self.task_id = task_id
+
+    @property
+    def state(self) -> "AbstractTaskState":
+        return self._state
 
     def start(self, worker_id: WorkerId):
         self._state.handle_start(task=self, worker_id=worker_id)

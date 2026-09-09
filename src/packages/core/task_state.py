@@ -23,22 +23,22 @@ class PendingState(TaskStateBase):
     def handle_start(self, task: Task, worker_id: WorkerId) -> None:
         """transitions to Running task. Side-effect: Sets lease"""
         task.set_lease(worker_id=worker_id)
-        task.transition_to(state="RunningState")
+        task.transition_to(state=RunningState)
 
 class RunningState(TaskStateBase):
     """Handles Success or Failure transition"""
     def handle_fail(self, task: Task) -> None:
-        task.transition_to(state="FailedState")
+        task.transition_to(state=FailedState)
 
     def handle_success(self, task: Task) -> None:
-        task.transition_to(state="SuccessState")
+        task.transition_to(state=SuccessState)
 
 class FailedState(TaskStateBase):
     """If restarted, increases the retry_count"""
     def handle_start(self, task: Task, worker_id: WorkerId) -> None:
         task.increase_retry()
         task.set_lease(worker_id=worker_id)
-        task.transition_to(state="RunningState")
+        task.transition_to(state=RunningState)
 
 class SuccessState(TaskStateBase):
     """Success State doesn't transition anywhere"""
