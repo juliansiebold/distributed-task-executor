@@ -32,9 +32,18 @@ class Task:
     '''Representation of an arbitrary task to queue into the system for execution'''
     task_id: TaskId
     payload: TaskPayload
+    _state: "AbstractTaskState"
     retry_count: int = 0
     lease: Optional[Lease] = None
-    _state: "AbstractTaskState"
+
+    def start(self, worker_id: WorkerId):
+        self._state.handle_start(task=self, worker_id=worker_id)
+
+    def succeed(self):
+        self._state.handle_success(task=self)
+
+    def fail(self):
+        self._state.handle_fail(taks=self)
 
     def increase_retry(self):
         """Increases retry count. 
@@ -48,15 +57,16 @@ class Task:
 
     def transition_to(self, state: "AbstractTaskState") -> None:
         """Transitions the task to it's next state"""
-        self._state = state
+        self._state = state()
 
 class AbstractTaskState(ABC):
+
     """Abstract interface for Task state handling."""
 
     def handle_start(self, task: Task, worker_id: WorkerId) -> None:
         pass
 
-    def handle_fail(self, taks: Task) -> None:
+    def handle_fail(self, task: Task) -> None:
         pass
 
     def handle_success(self, task: Task) -> None:
