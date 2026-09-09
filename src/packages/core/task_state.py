@@ -21,6 +21,7 @@ class TaskStateBase(AbstractTaskState):
 class PendingState(TaskStateBase):
     """Starts the Task if called"""
     def handle_start(self, task: Task, worker_id: WorkerId) -> None:
+        """transitions to Running task. Side-effect: Sets lease"""
         task.set_lease(worker_id=worker_id)
         task.transition_to(state="RunningState")
 
