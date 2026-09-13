@@ -2,7 +2,6 @@ import pytest
 
 from ..task_state import PendingState, RunningState, SuccessState, FailedState
 from ..models import Task, TaskPayload
-from uuid import uuid4
 
 @pytest.fixture
 def test_payload():
@@ -10,13 +9,10 @@ def test_payload():
 
 class TestPendingState:
 
-    def test_init_running_transition(self):
+    def test_init_running_transition(self, test_payload):
 
         test_init_task = Task(payload=test_payload, state=PendingState())
-        print("test_init_task: ", test_init_task.__dict__)
-
-        test_init_task.start(worker_id=123)
-        print("test_init_task after start: ", test_init_task.__dict__)
+        test_init_task.start()
 
         assert isinstance(test_init_task.state, RunningState)
 
