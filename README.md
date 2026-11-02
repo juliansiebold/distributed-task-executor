@@ -23,7 +23,7 @@ Observability / Health checks
 - Orchestrator Watchdog
 - Worker
 
-The State Store and Task Queue are defined as ports, so their implementations can be replaced. See `GLOSSARY.md` for the meaning of these terms.
+The State Store and Task Queue are designed as ports, so their implementations can be replaced (in progress, see #10). See `GLOSSARY.md` for the meaning of these terms.
 
 ### Task Sequence
 ```Mermaid
@@ -39,10 +39,10 @@ sequenceDiagram
     %% Task Submission Phase
     rect rgb(240, 244, 248)
     note over Client, Queue: 1. Submission & Ingestion Phase
-    Client->>Listener: POST /tasks (payload, parameters)
+    Client->>Listener: POST /tasks (Task Payload)
     activate Listener
     Listener->>DB: Write Task (status = "Pending")
-    Listener->>Queue: Push Task ID to Queue
+    Listener->>Queue: Push Task ID
     Listener-->>Client: 202 Accepted (returns task_id)
     deactivate Listener
     end
@@ -50,7 +50,7 @@ sequenceDiagram
     %% Dispatch & Execution Phase
     rect rgb(245, 248, 240)
     note over Queue, Worker: 2. Claim & Execution Phase
-    Worker->>Queue: Pop / Lease Next Task ID
+    Worker->>Queue: Pop Next Task ID
     activate Worker
     Queue-->>Worker: Return Task ID
     Worker->>DB: Acquire Lease (status = "Running", assigned_worker = worker_id, lease_ttl)
@@ -63,19 +63,19 @@ sequenceDiagram
     
     alt Worker still holds the Lease
         alt Successful Completion
-            Worker->>DB: Update Task (status = "Succeeded", result_data)
+            Worker->>DB: Update Task (status = "Succeeded", result_data) and release Lease
         else Task Runtime Error
-            Worker->>DB: Update Task (status = "Failed", error_details)
+            Worker->>DB: Update Task (status = "Failed", error_details) and release Lease
         end
     else Lease was lost
-        Worker->>DB: Report rejected, Task unchanged, add late report to Crash Report
+        Worker->>DB: Report rejected, Task unchanged, late report kept in Crash Report
     end
     deactivate Worker
     end
 
     %% Fault Recovery / Timeout Sweep
     rect rgb(253, 242, 242)
-    note over Orch, DB: 3. Resilience & Sweep Phase (Orchestrator Loop)
+    note over Orch, DB: 3. Resilience & Sweep Phase (Watchdog Loop)
     loop Periodic Health Sweep (e.g., every 10s)
         Orch->>DB: Query Tasks where status = "Running" AND lease_ttl expired
         Orch->>DB: Mark each expired Task (status = "Failed") and save a Crash Report
