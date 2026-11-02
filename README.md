@@ -3,10 +3,10 @@
 A project to showcase a distributed task executor.
 
 ### Components
-Queue (Dispatcher)
+Task Queue
 State Store
 Heartbeat & Membership
-Dead Letter Queue
+Dead Letter handling
 Scheduler / Clock trigger 
 
 ### Operationals
@@ -18,10 +18,12 @@ Observability / Health checks
 
 ### Objects / Participants
 - API Listener
-- State Store (Postgres)
-- Task Queue (Redis/MQ)
+- State Store
+- Task Queue
 - Orchestrator Watchdog
 - Worker
+
+The State Store and Task Queue are designed as ports, so their implementations can be replaced (in progress, see #10). See `GLOSSARY.md` for the meaning of these terms.
 
 ### Task Sequence
 ```Mermaid
@@ -29,18 +31,18 @@ sequenceDiagram
     autonumber
     actor Client
     participant Listener as API Listener
-    participant DB as State Store (Postgres)
-    participant Queue as Task Queue (Redis/MQ)
+    participant DB as State Store
+    participant Queue as Task Queue
     participant Orch as Orchestrator Watchdog
     participant Worker
 
     %% Task Submission Phase
     rect rgb(240, 244, 248)
     note over Client, Queue: 1. Submission & Ingestion Phase
-    Client->>Listener: POST /tasks (payload, parameters)
+    Client->>Listener: POST /tasks (Task Payload)
     activate Listener
-    Listener->>DB: Write task record (status = "PENDING")
-    Listener->>Queue: Push Task ID to Queue
+    Listener->>DB: Write Task (status = "Pending")
+    Listener->>Queue: Push Task ID
     Listener-->>Client: 202 Accepted (returns task_id)
     deactivate Listener
     end
@@ -48,10 +50,10 @@ sequenceDiagram
     %% Dispatch & Execution Phase
     rect rgb(245, 248, 240)
     note over Queue, Worker: 2. Claim & Execution Phase
-    Worker->>Queue: Pop / Lease Next Task ID
+    Worker->>Queue: Pop Next Task ID
     activate Worker
     Queue-->>Worker: Return Task ID
-    Worker->>DB: Acquire Lease Lock (status = "RUNNING", assigned_worker = worker_id, lease_ttl)
+    Worker->>DB: Acquire Lease (status = "Running", assigned_worker = worker_id, lease_ttl)
     
     loop Heartbeat Loop (Every N seconds)
         Worker->>DB: Send Heartbeat (extend lease_ttl)
@@ -59,28 +61,32 @@ sequenceDiagram
 
     Worker->>Worker: Execute Task Logic
     
-    alt Successful Completion
-        Worker->>DB: Update Record (status = "SUCCESS", result_data)
-    else Task Runtime Error
-        Worker->>DB: Update Record (status = "FAILED", error_details)
+    alt Worker still holds the Lease
+        alt Successful Completion
+            Worker->>DB: Update Task (status = "Succeeded", result_data) and release Lease
+        else Task Runtime Error
+            Worker->>DB: Update Task (status = "Failed", error_details) and release Lease
+        end
+    else Lease was lost
+        Worker->>DB: Report rejected, Task unchanged, late report kept in Crash Report
     end
     deactivate Worker
     end
 
     %% Fault Recovery / Timeout Sweep
     rect rgb(253, 242, 242)
-    note over Orch, DB: 3. Resilience & Sweep Phase (Orchestrator Loop)
+    note over Orch, DB: 3. Resilience & Sweep Phase (Watchdog Loop)
     loop Periodic Health Sweep (e.g., every 10s)
-        Orch->>DB: Query tasks where status = "RUNNING" AND lease_ttl expired
-        
-        alt Worker Crashed / Unresponsive
-            Orch->>DB: Check retry_count < max_retries
-            alt Retries Available
-                Orch->>DB: Reset Task (status = "PENDING", retry_count + 1)
-                Orch->>Queue: Re-queue Task ID
-            else Max Retries Exceeded
-                Orch->>DB: Mark Task (status = "DEAD_LETTER")
-            end
+        Orch->>DB: Query Tasks where status = "Running" AND lease_ttl expired
+        Orch->>DB: Mark each expired Task (status = "Failed") and save a Crash Report
+
+        Orch->>DB: Query Tasks where status = "Failed"
+        Orch->>DB: Check retry_count < max_retries
+        alt Retries Available
+            Orch->>DB: Retry Task (status = "Pending", retry_count + 1)
+            Orch->>Queue: Re-queue Task ID
+        else Max Retries Exceeded
+            Orch->>DB: Mark Task (status = "Dead Letter")
         end
     end
     end
