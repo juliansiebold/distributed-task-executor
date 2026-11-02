@@ -88,6 +88,9 @@ sequenceDiagram
         else Max Retries Exceeded
             Orch->>DB: Mark Task (status = "Dead Letter")
         end
+
+        Orch->>DB: Query Tasks stuck in status = "Pending" past the time limit
+        Orch->>Queue: Re-queue Task ID
     end
     end
 ```
