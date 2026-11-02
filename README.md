@@ -94,3 +94,6 @@ sequenceDiagram
     end
     end
 ```
+
+### Acknowledgements
+Thank you to [Matt Pocock](https://www.aihero.dev) for the [engineering skills for coding agents](https://github.com/mattpocock/skills). The glossary, the build plan and the workflow in `CLAUDE.md` all came out of working with them, and they made this project better.

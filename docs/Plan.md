@@ -1,5 +1,12 @@
 # Build Plan
 
+## Next step
+
+- **Issue:** [#16](https://github.com/juliansiebold/distributed-task-executor/issues/16) Restructure into one package with a working entry point
+- **Handoff:** [comment on #16](https://github.com/juliansiebold/distributed-task-executor/issues/16#issuecomment-6589290171)
+
+## About this plan
+
 This is a showcase codebase: built to production standards and deliberately overkill, but run locally. Running it on production infrastructure is out of scope, and the design leaves that open for later.
 
 **The goal:** a reviewer starts the system with one command, kills a Worker in the middle of a Task, and watches the Task recover with nothing lost. The code should hold up when they read it afterwards.
