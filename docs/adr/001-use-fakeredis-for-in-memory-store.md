@@ -4,7 +4,7 @@
 * **Date:** August 24, 2026
 * **Deciders:** Julian (Software Architect / Lead)
 
-> **Amendment (November 2, 2026):** The State Store and Task Queue are to sit behind ports (in progress, see #10), so their implementations can be replaced. `fakeredis` remains the adapter for local tests and the proof-of-concept. Only that adapter uses `redis-py` and Redis primitives; services depend on the ports. Where this ADR says services call `redis-py` directly, or that only a connection string changes, this amendment takes precedence.
+> **Amendment (November 2, 2026):** The State Store and Task Queue are to sit behind ports (in progress, see #10), so their implementations can be replaced. `fakeredis` remains the adapter for local tests and the demo, which runs it in server mode so separate processes share one store. Only that adapter uses `redis-py` and Redis primitives; services depend on the ports. Where this ADR says services call `redis-py` directly, or that only a connection string changes, this amendment takes precedence. This project is now described as a showcase codebase rather than a proof-of-concept, and the wording below was updated to match.
 
 ---
 
@@ -12,7 +12,7 @@
 
 To prove the core architectural concepts of a distributed task executor—including task dispatch, worker lease locking, heartbeat tracking, and failure recovery—the system requires a message queue and a shared key-value store.
 
-The primary goal of this project is portfolio demonstration and architectural proof-of-concept (PoC). Traditional external infrastructure (such as running Docker containers with standalone Redis or MySQL instances) adds operational setup friction and distracts from core application logic, concurrency handling, and state-machine correctness.
+The primary goal of this project is portfolio demonstration as a showcase codebase. Traditional external infrastructure (such as running Docker containers with standalone Redis or MySQL instances) adds operational setup friction and distracts from core application logic, concurrency handling, and state-machine correctness.
 
 We need a lightweight, zero-dependency storage layer that provides realistic Redis semantics without requiring external system services or Docker orchestration.
 
@@ -38,7 +38,7 @@ We need a lightweight, zero-dependency storage layer that provides realistic Red
 
 **Chosen Option:** **`fakeredis`**
 
-We will use `fakeredis` to back both the Task Queue and the State Store during the proof-of-concept phase. Services will interact with standard `redis-py` client interfaces, backed in-memory by `fakeredis`.
+We will use `fakeredis` to back both the Task Queue and the State Store in this showcase codebase. Services will interact with standard `redis-py` client interfaces, backed in-memory by `fakeredis`.
 
 ---
 
@@ -51,7 +51,7 @@ We will use `fakeredis` to back both the Task Queue and the State Store during t
 #### Negative Consequences & Mitigations
 
 * **In-Memory Volatility:** Data does not persist across application restarts.
-* *Mitigation:* Acceptable for a PoC. Test scripts can seed initial state as needed.
+* *Mitigation:* Acceptable for a showcase codebase. Test scripts can seed initial state as needed.
 
 
 * **Cross-Process Memory Boundaries:** By default, standard `fakeredis` instances exist within a single Python process memory space.

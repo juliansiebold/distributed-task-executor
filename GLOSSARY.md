@@ -43,7 +43,15 @@ The identifier that refers to one Task for its whole life, across every retry.
 The data a Task carries that describes the work to perform.
 _Avoid_: Parameters, arguments
 
+**Task Runner**:
+The replaceable capability a Worker uses to perform a Task's work, which can be cancelled while in progress.
+_Avoid_: Handler, executor
+
 ### Task lifecycle
+
+**Attempt**:
+One Worker's single try at a Task, numbered in the order the Task was claimed.
+_Avoid_: Run, try, execution
 
 **Pending**:
 The state of a Task that is waiting for a Worker to claim it.
