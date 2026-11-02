@@ -1,8 +1,10 @@
 ### ADR 001: Selection of `fakeredis` for In-Memory Queue & State Emulation
 
-* **Status:** Accepted
+* **Status:** Accepted, amended November 2, 2026
 * **Date:** August 24, 2026
 * **Deciders:** Julian (Software Architect / Lead)
+
+> **Amendment (November 2, 2026):** The State Store and Task Queue now sit behind ports, so their implementations can be replaced. `fakeredis` remains the adapter for local tests and the proof-of-concept. Only that adapter uses `redis-py` and Redis primitives; services depend on the ports. Where this ADR says services call `redis-py` directly, or that only a connection string changes, this amendment takes precedence.
 
 ---
 
