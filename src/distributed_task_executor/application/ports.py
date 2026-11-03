@@ -1,7 +1,7 @@
 from typing import Protocol, Optionnal
 from uuid import UUID
 
-from src.packages.core.models import Task, Lease
+from distributed_task_executor.core.models import Task, Lease
 
 class TaskQueueProtocol(Protocol):
     """Task queue managing interface"""
