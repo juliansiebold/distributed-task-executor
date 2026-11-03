@@ -1,7 +1,7 @@
 import pytest
 
-from ..task_state import PendingState, RunningState, SuccessState, FailedState
-from ..models import Task, TaskPayload
+from distributed_task_executor.core.task_state import PendingState, RunningState, SuccessState, FailedState
+from distributed_task_executor.core.models import Task, TaskPayload
 
 @pytest.fixture
 def test_payload():

@@ -10,7 +10,7 @@ dependencies = [
 ]
 
 [project.scripts]
-distributed-task-executor = "distributed_task_executor:main"
+distributed-task-executor = "distributed_task_executor.cli:main"
 
 [build-system]
 requires = ["uv_build>=0.12.5,<0.13.0"]
@@ -18,5 +18,21 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "import-linter>=2.15",
     "pytest>=9.1.1",
+]
+
+[tool.importlinter]
+root_package = "distributed_task_executor"
+
+[[tool.importlinter.contracts]]
+name = "Dependency rule"
+type = "layers"
+containers = ["distributed_task_executor"]
+exhaustive = true
+layers = [
+    "cli",
+    "services | adapters",
+    "application",
+    "core",
 ]

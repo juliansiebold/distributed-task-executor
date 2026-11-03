@@ -1,4 +1,4 @@
-from .models import AbstractTaskState, Task, TaskStatus
+from distributed_task_executor.core.models import AbstractTaskState, Task, TaskStatus
 
 class TaskException(Exception):
 

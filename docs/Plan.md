@@ -2,8 +2,9 @@
 
 ## Next step
 
-- **Issue:** [#16](https://github.com/juliansiebold/distributed-task-executor/issues/16) Restructure into one package with a working entry point
-- **Handoff:** [comment on #16](https://github.com/juliansiebold/distributed-task-executor/issues/16#issuecomment-6589290171)
+- **Issue:** [#7](https://github.com/juliansiebold/distributed-task-executor/issues/7) Complete the Task lifecycle
+- **Stage:** Grill, because the retry limit has open design decisions
+- **Handoff:** [comment on #7](https://github.com/juliansiebold/distributed-task-executor/issues/7#issuecomment-6614553514)
 
 ## About this plan
 
