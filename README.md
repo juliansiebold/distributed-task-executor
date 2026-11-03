@@ -81,11 +81,11 @@ sequenceDiagram
         Orch->>DB: Mark each expired Task (status = "Failed") and save a Crash Report
 
         Orch->>DB: Query Tasks where status = "Failed"
-        Orch->>DB: Check retry_count < max_retries
+        Orch->>DB: Check retry_count < retry_limit
         alt Retries Available
             Orch->>DB: Retry Task (status = "Pending", retry_count + 1)
             Orch->>Queue: Re-queue Task ID
-        else Max Retries Exceeded
+        else Retry Limit Reached
             Orch->>DB: Mark Task (status = "Dead Letter")
         end
 
