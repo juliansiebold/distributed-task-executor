@@ -3,8 +3,8 @@
 ## Next step
 
 - **Issue:** [#7](https://github.com/juliansiebold/distributed-task-executor/issues/7) Complete the Task lifecycle
-- **Stage:** Grill, because the retry limit has open design decisions
-- **Handoff:** [comment on #7](https://github.com/juliansiebold/distributed-task-executor/issues/7#issuecomment-6614553514)
+- **Stage:** Implement. The grill is finished, and the decisions are on the issue
+- **Handoff:** the post-grill comment on #7
 
 ## About this plan
 
