@@ -18,5 +18,20 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "import-linter>=2.15",
     "pytest>=9.1.1",
+]
+
+[tool.importlinter]
+root_package = "distributed_task_executor"
+
+[[tool.importlinter.contracts]]
+name = "Dependency rule"
+type = "layers"
+containers = ["distributed_task_executor"]
+layers = [
+    "cli",
+    "services | adapters",
+    "application",
+    "core",
 ]
