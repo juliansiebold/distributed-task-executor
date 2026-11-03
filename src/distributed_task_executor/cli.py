@@ -1,6 +1,5 @@
 import argparse
 import sys
-from collections.abc import Sequence
 
 SUBCOMMANDS = {
     "demo": "Run the recovery demo",
@@ -18,7 +17,7 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: Sequence[str] | None = None) -> int:
-    args = build_parser().parse_args(argv)
+def main() -> int:
+    args = build_parser().parse_args()
     print(f"{args.subcommand}: not implemented yet", file=sys.stderr)
     return 1

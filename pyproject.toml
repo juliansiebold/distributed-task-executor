@@ -29,6 +29,7 @@ root_package = "distributed_task_executor"
 name = "Dependency rule"
 type = "layers"
 containers = ["distributed_task_executor"]
+exhaustive = true
 layers = [
     "cli",
     "services | adapters",
