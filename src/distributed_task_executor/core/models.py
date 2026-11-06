@@ -29,9 +29,10 @@ class Task(BaseModel):
 
     payload: TaskPayload
     task_id: TaskId = Field(default_factory=uuid4)
-    retry_count: int = 0
+    retry_count: int = Field(default=0, ge=0, strict=True)
     retry_limit: int = Field(
-        default=RETRY_LIMIT_DEFAULT, ge=RETRY_LIMIT_MIN, le=RETRY_LIMIT_MAX, frozen=True)
+        default=RETRY_LIMIT_DEFAULT, ge=RETRY_LIMIT_MIN, le=RETRY_LIMIT_MAX, frozen=True,
+        strict=True)
 
     _state: "AbstractTaskState" = PrivateAttr()
 

@@ -127,18 +127,22 @@ def test_retry_limit_cannot_change_after_creation(payload):
     assert task.retry_limit == 3
 
 
-@pytest.mark.parametrize("action", ["start", "fail", "succeed", "retry", "dead_letter"])
+@pytest.mark.parametrize(
+    "action",
+    [Task.start, Task.fail, Task.succeed, Task.retry, Task.dead_letter],
+    ids=lambda action: action.__name__)
 def test_dead_letter_is_final(payload, action):
     task = failed_task(payload, retries_used=3)
     task.dead_letter()
 
     with pytest.raises(TaskException):
-        getattr(task, action)()
+        action(task)
 
     assert task.state.status == TaskStatus.DEAD_LETTER
 
 
-@pytest.mark.parametrize("action", ["retry", "dead_letter"])
+@pytest.mark.parametrize(
+    "action", [Task.retry, Task.dead_letter], ids=lambda action: action.__name__)
 def test_only_a_failed_task_can_be_retried_or_dead_lettered(payload, action):
     pending = new_task(payload)
     running = new_task(payload)
@@ -146,9 +150,21 @@ def test_only_a_failed_task_can_be_retried_or_dead_lettered(payload, action):
 
     for task in (pending, running):
         with pytest.raises(TaskException):
-            getattr(task, action)()
+            action(task)
 
 
 def test_has_retries_left_compares_count_with_limit(payload):
     assert new_task(payload).has_retries_left()
     assert not new_task(payload, retry_limit=0).has_retries_left()
+
+
+@pytest.mark.parametrize("retry_limit", [True, "3", 2.0])
+def test_retry_limit_must_be_an_int(payload, retry_limit):
+    with pytest.raises(ValidationError):
+        new_task(payload, retry_limit=retry_limit)
+
+
+@pytest.mark.parametrize("retry_count", [-1, True, "1"])
+def test_retry_count_must_be_a_non_negative_int(payload, retry_count):
+    with pytest.raises(ValidationError):
+        new_task(payload, retry_count=retry_count)

@@ -56,7 +56,7 @@ class RunningState(TaskStateBase):
         task.transition_to(state=SucceededState())
 
 class FailedState(TaskStateBase):
-    """Waits for the Watchdog to Retry the Task or send it to Dead Letter"""
+    """Waits for the Orchestrator Watchdog to Retry the Task or send it to Dead Letter"""
 
     status = TaskStatus.FAILED
 
@@ -75,7 +75,6 @@ class SucceededState(TaskStateBase):
     """Succeeded is final, so it allows no transitions"""
 
     status = TaskStatus.SUCCEEDED
-    pass
 
 class DeadLetterState(TaskStateBase):
     """Dead Letter is final, so it allows no transitions"""
