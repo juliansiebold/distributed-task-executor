@@ -2,9 +2,9 @@
 
 ## Next step
 
-- **Issue:** [#7](https://github.com/juliansiebold/distributed-task-executor/issues/7) Complete the Task lifecycle
-- **Stage:** Grill, because the retry limit has open design decisions
-- **Handoff:** [comment on #7](https://github.com/juliansiebold/distributed-task-executor/issues/7#issuecomment-6614553514)
+- **Issue:** [#8](https://github.com/juliansiebold/distributed-task-executor/issues/8) New Tasks always start Pending
+- **Stage:** Grill, because the creation and restore paths have open design decisions
+- **Handoff:** [comment on #8](https://github.com/juliansiebold/distributed-task-executor/issues/8#issuecomment-6680806408)
 
 ## About this plan
 

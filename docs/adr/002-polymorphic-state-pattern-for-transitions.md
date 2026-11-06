@@ -6,6 +6,8 @@
 
 > **Amendment (November 2, 2026):** The State pattern stands, but three things have changed. The code is moving to the layout in [the build plan](../Plan.md), so the `src/packages` paths below are out of date. `Lease` and `WorkerId` stay out of core and live in `application/` beside the ports. Saves are conditional, checked against a Task version and the Lease token (see #10), and the lifecycle now includes Dead Letter (see `GLOSSARY.md`). This project is also now described as a showcase codebase rather than a proof-of-concept, and the wording below was updated to match.
 
+> **Amendment (November 3, 2026):** `Task.transition_to`, `Task.increase_retry` and `Task.retry_count` are public on purpose. The State pattern accepts this collaboration between the Task and its states: the Task's actions delegate to the current state, and the state classes guard which transitions are allowed by raising `TaskException` for any move they don't permit. Hiding these members would protect against code calling them directly, which is not what this pattern is here to demonstrate.
+
 ---
 
 ## Context & Problem Statement

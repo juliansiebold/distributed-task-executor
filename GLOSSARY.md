@@ -73,6 +73,10 @@ _Avoid_: Error, crashed
 The return of a Failed Task to Pending so that a Worker can claim it for another attempt.
 _Avoid_: Restart, re-run
 
+**Retry limit**:
+The number of Retries a Task may use before a failure sends it to Dead Letter.
+_Avoid_: Max retries, max attempts
+
 **Dead Letter**:
 The final state of a Failed Task that has no Retries left.
 _Avoid_: Dead Letter Queue, DLQ, abandoned

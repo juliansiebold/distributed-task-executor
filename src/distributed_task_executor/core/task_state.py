@@ -21,9 +21,19 @@ class TaskStateBase(AbstractTaskState):
             "This state does not allow failing a Task.",
             task=task)
 
-    def handle_success(self, task: Task) -> None:
+    def handle_succeed(self, task: Task) -> None:
         raise TaskException(
             "This state does not allow succeeding a Task.",
+            task=task)
+
+    def handle_retry(self, task: Task) -> None:
+        raise TaskException(
+            "This state does not allow retrying a Task.",
+            task=task)
+
+    def handle_dead_letter(self, task: Task) -> None:
+        raise TaskException(
+            "This state does not allow sending a Task to Dead Letter.",
             task=task)
 
 class PendingState(TaskStateBase):
@@ -42,20 +52,31 @@ class RunningState(TaskStateBase):
     def handle_fail(self, task: Task) -> None:
         task.transition_to(state=FailedState())
 
-    def handle_success(self, task: Task) -> None:
-        task.transition_to(state=SuccessState())
+    def handle_succeed(self, task: Task) -> None:
+        task.transition_to(state=SucceededState())
 
 class FailedState(TaskStateBase):
-    """If restarted, increases the retry_count"""
+    """Waits for the Orchestrator Watchdog to Retry the Task or send it to Dead Letter"""
 
     status = TaskStatus.FAILED
 
-    def handle_start(self, task: Task) -> None:
+    def handle_retry(self, task: Task) -> None:
+        if not task.has_retries_left():
+            raise TaskException("This Task has no Retries left.", task=task)
         task.increase_retry()
-        task.transition_to(state=RunningState())
+        task.transition_to(state=PendingState())
 
-class SuccessState(TaskStateBase):
-    """Success State doesn't transition anywhere"""
+    def handle_dead_letter(self, task: Task) -> None:
+        if task.has_retries_left():
+            raise TaskException("This Task still has Retries left.", task=task)
+        task.transition_to(state=DeadLetterState())
+
+class SucceededState(TaskStateBase):
+    """Succeeded is final, so it allows no transitions"""
 
     status = TaskStatus.SUCCEEDED
-    pass
+
+class DeadLetterState(TaskStateBase):
+    """Dead Letter is final, so it allows no transitions"""
+
+    status = TaskStatus.DEAD_LETTER

@@ -4,11 +4,16 @@ from abc import ABC, abstractmethod
 from enum import StrEnum
 from uuid import UUID, uuid4
 
+RETRY_LIMIT_DEFAULT = 3
+RETRY_LIMIT_MIN = 0
+RETRY_LIMIT_MAX = 10
+
 class TaskStatus(StrEnum):
     PENDING = 'Pending'
     RUNNING = 'Running'
     FAILED = 'Failed'
     SUCCEEDED = 'Succeeded'
+    DEAD_LETTER = 'Dead Letter'
 
 @dataclass(frozen=True)
 class TaskPayload:
@@ -24,7 +29,10 @@ class Task(BaseModel):
 
     payload: TaskPayload
     task_id: TaskId = Field(default_factory=uuid4)
-    retry_count: int = 0
+    retry_count: int = Field(default=0, ge=0, strict=True)
+    retry_limit: int = Field(
+        default=RETRY_LIMIT_DEFAULT, ge=RETRY_LIMIT_MIN, le=RETRY_LIMIT_MAX, frozen=True,
+        strict=True)
 
     _state: "AbstractTaskState" = PrivateAttr()
 
@@ -40,17 +48,23 @@ class Task(BaseModel):
         self._state.handle_start(task=self)
 
     def succeed(self):
-        self._state.handle_success(task=self)
+        self._state.handle_succeed(task=self)
 
     def fail(self):
         self._state.handle_fail(task=self)
 
-    def increase_retry(self):
-        """Increases retry count. 
-            Side effect: If max retries reached, fail task"""
-        self.retry_count += 1
+    def retry(self):
+        self._state.handle_retry(task=self)
 
-        # TODO create max retries reached condition
+    def dead_letter(self):
+        self._state.handle_dead_letter(task=self)
+
+    def has_retries_left(self) -> bool:
+        return self.retry_count < self.retry_limit
+
+    def increase_retry(self):
+        """Increases the Retry count. FailedState calls this when it Retries the Task."""
+        self.retry_count += 1
 
     def transition_to(self, state: "AbstractTaskState") -> None:
         """Transitions the task to it's next state"""
@@ -72,5 +86,13 @@ class AbstractTaskState(ABC):
         pass
 
     @abstractmethod
-    def handle_success(self, task: Task) -> None:
+    def handle_succeed(self, task: Task) -> None:
+        pass
+
+    @abstractmethod
+    def handle_retry(self, task: Task) -> None:
+        pass
+
+    @abstractmethod
+    def handle_dead_letter(self, task: Task) -> None:
         pass
