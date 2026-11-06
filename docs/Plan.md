@@ -2,9 +2,9 @@
 
 ## Next step
 
-- **Issue:** [#7](https://github.com/juliansiebold/distributed-task-executor/issues/7) Complete the Task lifecycle
-- **Stage:** Implement. The grill is finished, and the decisions are on the issue
-- **Handoff:** the post-grill comment on #7
+- **Issue:** [#8](https://github.com/juliansiebold/distributed-task-executor/issues/8) New Tasks always start Pending
+- **Stage:** Grill, because the creation and restore paths have open design decisions
+- **Handoff:** [comment on #8](https://github.com/juliansiebold/distributed-task-executor/issues/8#issuecomment-6680806408)
 
 ## About this plan
 
