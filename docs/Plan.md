@@ -3,8 +3,8 @@
 ## Next step
 
 - **Issue:** [#8](https://github.com/juliansiebold/distributed-task-executor/issues/8) New Tasks always start Pending
-- **Stage:** Grill, because the creation and restore paths have open design decisions
-- **Handoff:** [comment on #8](https://github.com/juliansiebold/distributed-task-executor/issues/8#issuecomment-6680806408)
+- **Stage:** Implement, following the grill
+- **Handoff:** [post-grill comment on #8](https://github.com/juliansiebold/distributed-task-executor/issues/8#issuecomment-6708183101)
 
 ## About this plan
 
