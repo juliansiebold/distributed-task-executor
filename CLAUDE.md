@@ -2,6 +2,8 @@
 
 "Next step" in `docs/Plan.md` names the current issue. Start new work there. If that issue has a post-grill comment, it overrides "Next step": switch to the branch it names and continue from there. Follow these stages in order, loading the `mattpocock-skills` skills each one names.
 
+Load every skill this file names yourself. A skill marked `disable-model-invocation`, such as `grill-me` or `grill-with-docs`, runs only when the maintainer types it: load the skills it wraps instead (`grilling`, plus `domain-modeling` for `grill-with-docs`), and for any other, ask the maintainer to type it.
+
 1. **Grill**, when design decisions are open: `grilling` and `domain-modeling`. Commit any docs it changes to the issue's branch. Done when no decision is left assumed, and `GLOSSARY.md`, ADRs and issues record the outcome.
 2. **Hand off to implementation**, after a grill: if the grill committed anything, update "Next step" on the issue's branch to say Implement, and ask the maintainer to push the branch. Then post the post-grill comment, naming the branch or "no branch". If nothing was committed, leave "Next step" alone. Implementation continues on any branch named, so one PR carries both. Done when the comment is on the issue and any branch it names is pushed.
 3. **Implement** the issue test-first: `tdd`. Check **PR size** first. Add `codebase-design` for module boundaries and `diagnosing-bugs` for hard bugs. Done when the issue's "Done when" list is met.
