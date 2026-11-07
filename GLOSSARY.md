@@ -10,6 +10,9 @@ A system that accepts Tasks from Clients and executes them on a pool of Workers,
 The person or thing that submits a Task and receives its Task ID.
 _Avoid_: Caller, creator, user, submitter
 
+**Client ID**:
+The identifier of the Client that submitted a Task.
+
 **API Listener**:
 The entry point that accepts a submitted Task, records it and places it on the Task Queue.
 _Avoid_: Server, gateway, ingestion service
