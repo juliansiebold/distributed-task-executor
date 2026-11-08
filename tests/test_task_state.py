@@ -135,6 +135,12 @@ def test_rehydrate_applies_the_retry_limit_rules(payload, retry_limit):
         rehydrated_task(payload, retry_count=0, retry_limit=retry_limit)
 
 
+@pytest.mark.parametrize("state", [None, "Failed", TaskStatus.FAILED, FailedState])
+def test_rehydrate_requires_a_state_object(payload, state):
+    with pytest.raises(TypeError):
+        rehydrated_task(payload, state=state)
+
+
 def test_rehydrate_rejects_an_empty_client_id(payload):
     with pytest.raises(ValidationError):
         rehydrated_task(payload, client_id="")
@@ -154,6 +160,30 @@ def test_model_copy_raises_and_points_to_the_supported_paths(payload):
         task.model_copy(update={"retry_count": 99})
 
     assert task.retry_count == 0
+
+
+def test_model_construct_raises_and_points_to_the_supported_paths(payload):
+    with pytest.raises(TypeError, match="rehydrate"):
+        Task.model_construct(payload=payload, client_id="", retry_count=99)
+
+
+def test_deprecated_copy_raises_and_points_to_the_supported_paths(payload):
+    task = new_task(payload)
+
+    with pytest.raises(TypeError, match="rehydrate"):
+        task.copy(update={"retry_count": 99})
+
+    assert task.retry_count == 0
+
+
+def test_task_id_cannot_change_after_creation(payload):
+    task = new_task(payload)
+    task_id = task.task_id
+
+    with pytest.raises(ValidationError):
+        task.task_id = uuid4()
+
+    assert task.task_id == task_id
 
 
 def test_task_still_supports_repr_and_equality(payload):

@@ -8,6 +8,7 @@ from uuid import UUID, uuid4
 RETRY_LIMIT_DEFAULT = 3
 RETRY_LIMIT_MIN = 0
 RETRY_LIMIT_MAX = 10
+USE_SUPPORTED_TASK_PATHS = "Use Task(...) to create a Task or Task.rehydrate(...) to restore one."
 
 class TaskStatus(StrEnum):
     PENDING = 'Pending'
@@ -30,7 +31,7 @@ class Task(BaseModel):
 
     payload: TaskPayload
     client_id: ClientId = Field(min_length=1)
-    task_id: TaskId = Field(default_factory=uuid4)
+    task_id: TaskId = Field(default_factory=uuid4, frozen=True)
     retry_count: int = Field(default=0, ge=0, strict=True)
     retry_limit: int = Field(ge=RETRY_LIMIT_MIN, le=RETRY_LIMIT_MAX, frozen=True, strict=True)
 
@@ -60,6 +61,8 @@ class Task(BaseModel):
             retry_count: int,
             retry_limit: int) -> Self:
         """Restores a stored Task, applying the same field rules as creating one."""
+        if not isinstance(state, AbstractTaskState):
+            raise TypeError("A Task can only be rehydrated with a state object.")
         task = cls.__new__(cls)
         # Skips Task.__init__, which only creates new Tasks, but still validates the fields.
         BaseModel.__init__(
@@ -80,10 +83,17 @@ class Task(BaseModel):
 
     @classmethod
     def model_validate(cls, *args, **kwargs) -> NoReturn:
-        raise TypeError("Use Task(...) to create a Task or Task.rehydrate(...) to restore one.")
+        raise TypeError(USE_SUPPORTED_TASK_PATHS)
+
+    @classmethod
+    def model_construct(cls, *args, **kwargs) -> NoReturn:
+        raise TypeError(USE_SUPPORTED_TASK_PATHS)
 
     def model_copy(self, *args, **kwargs) -> NoReturn:
-        raise TypeError("Use Task(...) to create a Task or Task.rehydrate(...) to restore one.")
+        raise TypeError(USE_SUPPORTED_TASK_PATHS)
+
+    def copy(self, *args, **kwargs) -> NoReturn:
+        raise TypeError(USE_SUPPORTED_TASK_PATHS)
 
     @property
     def state(self) -> "AbstractTaskState":
@@ -116,7 +126,8 @@ class Task(BaseModel):
         self._state = state
 
 # We define AbstractTaskState in models to keep the core concepts in one central
-# place. We avoid circular dependencies to task_state.py. 
+# place. task_state.py imports this module, so this module can only import
+# task_state.py inside a function, as Task.__init__ does.
 class AbstractTaskState(ABC):
 
     """Abstract interface for Task state handling."""
