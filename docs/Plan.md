@@ -2,9 +2,9 @@
 
 ## Next step
 
-- **Issue:** [#11](https://github.com/juliansiebold/distributed-task-executor/issues/11) Task state transition test suite
-- **Stage:** Implement
-- **Handoff:** [handoff comment on #11](https://github.com/juliansiebold/distributed-task-executor/issues/11#issuecomment-6734909680)
+- **Issue:** [#10](https://github.com/juliansiebold/distributed-task-executor/issues/10) Define State Store and Task Queue ports
+- **Stage:** Grill
+- **Handoff:** [handoff comment on #10](https://github.com/juliansiebold/distributed-task-executor/issues/10#issuecomment-6735316305)
 
 ## About this plan
 
