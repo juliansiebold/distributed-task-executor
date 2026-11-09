@@ -2,9 +2,9 @@
 
 ## Next step
 
-- **Issue:** [#8](https://github.com/juliansiebold/distributed-task-executor/issues/8) New Tasks always start Pending
-- **Stage:** Grill, because the creation and restore paths have open design decisions
-- **Handoff:** [comment on #8](https://github.com/juliansiebold/distributed-task-executor/issues/8#issuecomment-6680806408)
+- **Issue:** [#11](https://github.com/juliansiebold/distributed-task-executor/issues/11) Task state transition test suite
+- **Stage:** Implement
+- **Handoff:** [handoff comment on #11](https://github.com/juliansiebold/distributed-task-executor/issues/11#issuecomment-6734909680)
 
 ## About this plan
 

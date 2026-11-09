@@ -10,6 +10,9 @@ A system that accepts Tasks from Clients and executes them on a pool of Workers,
 The person or thing that submits a Task and receives its Task ID.
 _Avoid_: Caller, creator, user, submitter
 
+**Client ID**:
+The identifier of the Client that submitted a Task.
+
 **API Listener**:
 The entry point that accepts a submitted Task, records it and places it on the Task Queue.
 _Avoid_: Server, gateway, ingestion service
@@ -72,6 +75,9 @@ _Avoid_: Error, crashed
 **Retry**:
 The return of a Failed Task to Pending so that a Worker can claim it for another attempt.
 _Avoid_: Restart, re-run
+
+**Retry count**:
+The number of Retries a Task has used so far.
 
 **Retry limit**:
 The number of Retries a Task may use before a failure sends it to Dead Letter.
