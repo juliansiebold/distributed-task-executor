@@ -119,13 +119,19 @@ def test_retry_count_stays_the_same_on_every_other_transition(case):
 
 
 def test_retry_limit_of_zero_sends_the_first_failure_to_dead_letter():
-    task = rehydrated_task(FAILED, retry_count=0, retry_limit=0)
+    task = Task(payload=TaskPayload(delay_seconds=1), client_id="test-client", retry_limit=0)
+    task.start()
+    task.fail()
 
     with pytest.raises(TaskException):
         task.retry()
+    assert task.state.status == FAILED
+    assert task.retry_count == 0
+
     task.dead_letter()
 
     assert task.state.status == DEAD_LETTER
+    assert task.retry_count == 0
 
 
 # With every action equally likely, most sequences reach Succeeded early and rarely
